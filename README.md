@@ -4,13 +4,23 @@ A bash script to check and install the latest Node.js version. Last installed No
 &nbsp;  
 &nbsp;  
 ## Usage
+Before using script, script file has to be marked as executable with the following command (after going to the script folder):
+
+```console
+foo@bar:~$ chmode +x njs-update
+```
+
+Finally, it is recommended to add script folder to `$PATH` environmental variable.
+
+To use the script you just type:
+
 ```console
 foo@bar:~$ njs-update
 ```
 &nbsp;  
 &nbsp;  
 ## Description
-On excecution the script does the following:
+On execution the script does the following:
 
 * Get system current Node.js version and the latest remote one.
 * If the system current version **is** the latest one, script just updates the `npm` version
