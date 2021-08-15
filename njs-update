@@ -5,8 +5,11 @@
 CURRENT_VERSION=$(nvm version)
 LATEST_VERSION=$(nvm version-remote)
 
-if [[ $CURRENT_VERSION != $LATEST_VERSION ]]
+if [[ $CURRENT_VERSION == $LATEST_VERSION ]]
 then
+    nvm install-latest-npm
+    echo "Already using Node.js latest version (${LATEST_VERSION})"
+else
     echo "Current version: ${CURRENT_VERSION}"
     echo "Latest version: ${LATEST_VERSION}"
     read -r var1 var2 <<< $(nvm ls ${LATEST_VERSION} --no-colors)
@@ -49,8 +52,5 @@ then
             echo "Type \`nvm use\` to use node ${LAST_VERSION}"
         fi
     fi
-else
-    nvm install-latest-npm
-    echo "Already using Node.js latest version (${LATEST_VERSION})"
 fi
 
