@@ -17,6 +17,7 @@ else
     then
         nvm use $LATEST_VERSION
         nvm install-latest-npm
+        rm -f .nvmrc
         echo "${LATEST_VERSION}" >> .nvmrc
         echo "Type \`nvm use\` to use node ${LATEST_VERSION}"
     else
@@ -43,11 +44,13 @@ else
             then
                 nvm uninstall $LAST_VERSION
             fi
+            rm -f .nvmrc
             echo "${LATEST_VERSION}" >> .nvmrc
             echo "Type \`nvm use\` to use node ${LATEST_VERSION}"
         else
             nvm use $LAST_VERSION
             nvm install-latest-npm
+            rm -f .nvmrc
             echo "${LAST_VERSION}" >> .nvmrc
             echo "Type \`nvm use\` to use node ${LAST_VERSION}"
         fi
