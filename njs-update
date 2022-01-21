@@ -10,10 +10,22 @@ then
     nvm install-latest-npm
     echo "Already using Node.js latest version (${LATEST_VERSION})"
 else
-    echo "Current version: ${CURRENT_VERSION}"
-    echo "Latest version: ${LATEST_VERSION}"
-    read -r var1 var2 <<< $(nvm ls ${LATEST_VERSION} --no-colors)
-    if [[ $var1 == $LATEST_VERSION ]]
+    INSTALLED_VERSIONS=$(nvm ls --no-colors)
+    unset args
+    while IFS= read -r line; do
+        args+=("${line//[^[:alnum:].]/}")
+    done <<< "$INSTALLED_VERSIONS"
+    for l in ${args[@]}; do
+        if [[ $l == *"default"* ]]
+        then
+            break
+        fi
+        LAST_INSTALLED_VERSION=$l
+    done
+    echo "Current used version:     ${CURRENT_VERSION}"
+    echo "Latest installed version: ${LAST_INSTALLED_VERSION}"
+    echo "Latest available version: ${LATEST_VERSION}"
+    if [[ $LAST_INSTALLED_VERSION == $LATEST_VERSION ]]
     then
         nvm use $LATEST_VERSION
         nvm install-latest-npm
@@ -22,37 +34,25 @@ else
         echo "Type \`nvm use\` to use node ${LATEST_VERSION}"
     else
         echo "Latest Node.js version (${LATEST_VERSION}) has not been installed"
-        INSTALLED_VERSIONS=$(nvm ls --no-colors)
-        unset args
-        while IFS= read -r line; do
-            args+=("${line//[^[:alnum:].]/}")
-        done <<< "$INSTALLED_VERSIONS"
-        for l in ${args[@]}; do
-            if [[ $l == *"default"* ]]
-            then
-                break
-            fi
-            LAST_VERSION=$l
-        done
         read -p "Do you want to install it (y/N) : " installAns
         if [[  $installAns == "y" ]]
         then
-            read -p "Do you want to uninstall previous Last installed version (${LAST_VERSION}) (y/N) : " uninstallAns
-            nvm install $LATEST_VERSION --reinstall-packages-from=$LAST_VERSION --latest-npm
+            read -p "Do you want to uninstall previous Last installed version (${LAST_INSTALLED_VERSION}) (y/N) : " uninstallAns
+            nvm install $LATEST_VERSION --reinstall-packages-from=$LAST_INSTALLED_VERSION --latest-npm
             nvm use $LATEST_VERSION
             if [[ $uninstallAns == "y" ]]
             then
-                nvm uninstall $LAST_VERSION
+                nvm uninstall $LAST_INSTALLED_VERSION
             fi
             rm -f .nvmrc
             echo "${LATEST_VERSION}" >> .nvmrc
             echo "Type \`nvm use\` to use node ${LATEST_VERSION}"
         else
-            nvm use $LAST_VERSION
+            nvm use $LAST_INSTALLED_VERSION
             nvm install-latest-npm
             rm -f .nvmrc
-            echo "${LAST_VERSION}" >> .nvmrc
-            echo "Type \`nvm use\` to use node ${LAST_VERSION}"
+            echo "${LAST_INSTALLED_VERSION}" >> .nvmrc
+            echo "Type \`nvm use\` to use node ${LAST_INSTALLED_VERSION}"
         fi
     fi
 fi
